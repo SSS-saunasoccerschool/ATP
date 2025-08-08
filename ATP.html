@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブATPエネルギーシステム解説</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Subtle Accents -->
+    <!-- Application Structure Plan: A top-down, single-page infographic flow. Starts with the core concept (What is ATP?), explains the three systems in a comparable card format, provides a central interactive chart to visualize the systems' interplay over time (the key interaction), and concludes with practical training applications. A new section for AI-powered exercise plan suggestion is added at the end, allowing users to apply the learned concepts. This structure guides the user from foundational knowledge to practical use, with the interactive chart serving as the core learning tool to make an abstract concept tangible, and the AI feature offering personalized application. -->
+    <!-- Visualization & Content Choices: Report Info -> Goal -> Viz/Presentation Method -> Interaction -> Justification -> Library/Method. 1. Three Systems -> Inform/Compare -> Tailwind CSS Cards -> Static -> Easy side-by-side comparison of features. 2. System Contribution vs. Time -> Show Change/Relationships -> Stacked Bar Chart -> Slider/Buttons to change time -> Dynamically visualizing the core concept of shifting energy dominance is more impactful than static text. -> Chart.js. 3. Training Applications -> Inform/Organize -> Tailwind CSS Cards -> Static -> Connects theory to practical, actionable advice for users. 4. Exercise Plan Suggestion (NEW) -> Provide Personalized Advice -> Text Input, Button, Text Output -> User input for goal, AI generates plan based on energy system knowledge. -> Gemini API. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #FDFBF7;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .control-button {
+            transition: all 0.3s ease;
+        }
+        .control-button.active {
+            background-color: #D97706; /* amber-600 */
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="text-center py-12 bg-amber-50">
+        <div class="container mx-auto px-4">
+            <h1 class="text-4xl md:text-5xl font-bold text-amber-800">運動のエネルギー源</h1>
+            <h2 class="text-xl md:text-2xl font-bold text-amber-700 mt-2">ATPとその再合成システムを解き明かす</h2>
+            <p class="mt-4 max-w-3xl mx-auto text-lg text-gray-700">
+                私たちの身体がどのようにして運動のためのエネルギーを生み出しているのか、その中心的な役割を果たす「ATP」の仕組みをインタラクティブに探求しましょう。
+            </p>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <section id="what-is-atp" class="mb-16">
+            <h3 class="text-3xl font-bold text-center mb-8 text-gray-800">1. エネルギーの通貨「ATP」とは？</h3>
+            <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md border border-gray-200">
+                <p class="text-lg leading-relaxed mb-4">
+                    <strong class="text-amber-700">ATP（アデノシン三リン酸）</strong>は、筋肉が収縮する際に<strong class="text-red-600">直接的に使われる唯一のエネルギー源</strong>です。食事から得た栄養素は、最終的にこのATPという形に変換され、生命活動に使われます。
+                </p>
+                <div class="mt-6 p-6 bg-amber-50 rounded-lg flex items-center space-x-4">
+                    <div class="text-4xl">🔋</div>
+                    <div>
+                        <h4 class="font-bold text-xl text-amber-800">しかし、貯蔵量はごくわずか</h4>
+                        <p class="text-gray-700 mt-1">
+                            体内に貯蔵されているATPの量は非常に少なく、全力運動でわずか数秒しか持ちません。そのため、運動を続けるには、消費されたATPを絶えず再合成（作り直し）する必要があります。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="systems" class="mb-16">
+            <h3 class="text-3xl font-bold text-center mb-8 text-gray-800">2. 3つのATP再合成システム</h3>
+            <p class="text-center max-w-3xl mx-auto mb-12 text-lg">
+                身体は、運動の強度や時間に応じて、3つの異なるエネルギー供給システムを巧みに使い分け、ATPを再合成しています。それぞれのシステムの特徴を見ていきましょう。
+            </p>
+            <div class="grid md:grid-cols-3 gap-8">
+                
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 transform hover:-translate-y-1 transition-transform duration-300">
+                    <h4 class="text-2xl font-bold text-cyan-700 mb-4">① ATP-PCr系 (ホスファゲン系)</h4>
+                    <p class="mb-4 text-gray-600">最も素早くエネルギーを供給する瞬発力の源。</p>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start"><span class="mr-3 text-xl">🚀</span><div><strong>供給速度:</strong> 最も速い</div></li>
+                        <li class="flex items-start"><span class="mr-3 text-xl">⏱️</span><div><strong>持続時間:</strong> 約10秒以内</div></li>
+                        <li class="flex items-start"><span class="mr-3 text-xl">⛽</span><div><strong>主な燃料:</strong> クレアチンリン酸(PCr)</div></li>
+                        <li class="flex items-start"><span class="mr-3 text-xl">💨</span><div><strong>酸素:</strong> 不要</div></li>
+                    </ul>
+                    <div class="mt-6 pt-4 border-t">
+                        <h5 class="font-bold mb-2 text-cyan-800">活躍する運動例:</h5>
+                        <p class="text-sm text-gray-600">100m走、ウェイトリフティング、ジャンプ</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 transform hover:-translate-y-1 transition-transform duration-300">
+                    <h4 class="text-2xl font-bold text-orange-600 mb-4">② 解糖系 (乳酸系)</h4>
+                    <p class="mb-4 text-gray-600">短時間の高強度運動を支えるパワフルなシステム。</p>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start"><span class="mr-3 text-xl">⚡</span><div><strong>供給速度:</strong> 速い</div></li>
+                        <li class="flex items-start"><span class="mr-3 text-xl">⏱️</span><div><strong>持続時間:</strong> 約10秒〜数分</div></li>
+                        <li class="flex items-start"><span class="mr-3 text-xl">🍞</span><div><strong>主な燃料:</strong> 糖質 (グリコーゲン)</div></li>
+                        <li class="flex items-start"><span class="mr-3 text-xl">💨</span><div><strong>酸素:</strong> 不要</div></li>
+                    </ul>
+                    <div class="mt-6 pt-4 border-t">
+                        <h5 class="font-bold mb-2 text-orange-700">活躍する運動例:</h5>
+                        <p class="text-sm text-gray-600">400m走、高強度インターバルトレーニング</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200 transform hover:-translate-y-1 transition-transform duration-300">
+                    <h4 class="text-2xl font-bold text-sky-700 mb-4">③ 有酸素系 (酸化系)</h4>
+                    <p class="mb-4 text-gray-600">長時間の運動を可能にする持久力の基盤。</p>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start"><span class="mr-3 text-xl">🏃</span><div><strong>供給速度:</strong> 遅い</div></li>
+                        <li class="flex items-start"><span class="mr-3 text-xl">⏱️</span><div><strong>持続時間:</strong> 数分以上</div></li>
+                        <li class="flex items-start"><span class="mr-3 text-xl">🥑</span><div><strong>主な燃料:</strong> 糖質と脂質</div></li>
+                        <li class="flex items-start"><span class="mr-3 text-xl">💨</span><div><strong>酸素:</strong> 必要</div></li>
+                    </ul>
+                    <div class="mt-6 pt-4 border-t">
+                        <h5 class="font-bold mb-2 text-sky-800">活躍する運動例:</h5>
+                        <p class="text-sm text-gray-600">マラソン、ウォーキング、サイクリング</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="interactive-chart" class="mb-16">
+            <h3 class="text-3xl font-bold text-center mb-8 text-gray-800">3. システムの連携を可視化する</h3>
+            <p class="text-center max-w-3xl mx-auto mb-8 text-lg">
+                実際には、これらのシステムは独立して働くのではなく、運動時間に応じて貢献度を変えながら連携しています。下のボタンで運動時間を選択し、エネルギー供給の主役がどのように移り変わるかを見てみましょう。
+            </p>
+            <div class="bg-white p-4 md:p-8 rounded-xl shadow-xl border border-gray-200">
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8" id="time-controls">
+                    <button data-time="10s" class="control-button px-4 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold">10秒</button>
+                    <button data-time="30s" class="control-button px-4 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold">30秒</button>
+                    <button data-time="2min" class="control-button px-4 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold">2分</button>
+                    <button data-time="30min" class="control-button px-4 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold">30分</button>
+                    <button data-time="2hr" class="control-button px-4 py-2 rounded-full bg-gray-200 text-gray-800 font-semibold">2時間</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="energySystemChart"></canvas>
+                </div>
+                <div id="chart-description" class="mt-8 text-center text-gray-700 bg-amber-50 p-4 rounded-lg">
+                    <p class="font-semibold text-lg"></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="application" class="mb-16">
+            <h3 class="text-3xl font-bold text-center mb-8 text-gray-800">4. トレーニングへの応用</h3>
+             <p class="text-center max-w-3xl mx-auto mb-12 text-lg">
+                この知識を理解することで、あなたのトレーニング目的（筋力向上、持久力向上、脂肪燃焼）に合わせて、より効果的な運動を選択できます。
+            </p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                    <h4 class="text-2xl font-bold mb-3">💪 瞬発力・筋力向上</h4>
+                    <p class="text-gray-700">
+                        短時間で最大筋力を発揮するトレーニングは、<strong class="text-cyan-700">ATP-PCr系</strong>と<strong class="text-orange-600">解糖系</strong>を主に鍛えます。セット間の休息をしっかり取ることが重要です。
+                    </p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                    <h4 class="text-2xl font-bold mb-3">🏃 持久力向上</h4>
+                    <p class="text-gray-700">
+                        長時間運動を続ける能力は、<strong class="text-sky-700">有酸素系</strong>の効率に依存します。低〜中強度で継続的な運動を行い、酸素を取り込みエネルギーに変える能力を高めましょう。
+                    </p>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                    <h4 class="text-2xl font-bold mb-3">🔥 脂肪燃焼</h4>
+                    <p class="text-gray-700">
+                        脂肪を主な燃料とするのは<strong class="text-sky-700">有酸素系</strong>です。しかし、筋トレで筋肉量を増やすと基礎代謝が上がり、より痩せやすい体に。 <strong class="text-amber-700">「筋トレ → 有酸素運動」</strong>の順番が最も効率的です。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="ai-plan" class="mb-16">
+            <h3 class="text-3xl font-bold text-center mb-8 text-gray-800">5. ✨ AIが提案する運動プラン ✨</h3>
+            <p class="text-center max-w-3xl mx-auto mb-8 text-lg">
+                あなたの運動目標を入力してください。AIが、運動のエネルギーシステムに関する知識に基づいて、あなたに合った運動プランを提案します。
+            </p>
+            <div class="bg-white p-4 md:p-8 rounded-xl shadow-xl border border-gray-200">
+                <div class="mb-6">
+                    <label for="user-goal" class="block text-lg font-semibold text-gray-800 mb-2">あなたの目標:</label>
+                    <textarea id="user-goal" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-amber-500 focus:border-amber-500 text-gray-800" rows="3" placeholder="例: 脂肪を燃焼したい、マラソンを完走したい、瞬発力を高めたい"></textarea>
+                </div>
+                <button id="generate-plan-btn" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 flex items-center justify-center">
+                    <span id="button-text">✨ プランを生成する ✨</span>
+                    <span id="loading-spinner" class="hidden animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full ml-3"></span>
+                </button>
+                <div id="plan-output" class="mt-8 p-6 bg-amber-50 rounded-lg border border-amber-200 text-gray-700 hidden">
+                    <h4 class="font-bold text-xl mb-3 text-amber-800">提案された運動プラン:</h4>
+                    <p id="plan-content" class="whitespace-pre-wrap leading-relaxed"></p>
+                </div>
+                 <div id="error-message" class="mt-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg hidden">
+                    <p>エラーが発生しました。もう一度お試しください。</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-8 mt-12 bg-gray-800 text-gray-400">
+        <p>&copy; 2025 インタラクティブATPエネルギーシステム解説</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const energyData = {
+                '10s': {
+                    values: [85, 15, 5],
+                    description: '10秒間のスプリントのような爆発的な運動では、ATP-PCr系がエネルギーの大半を供給します。'
+                },
+                '30s': {
+                    values: [30, 55, 15],
+                    description: '30秒程度の高強度運動では、解糖系が主役となり、パワーを持続させます。'
+                },
+                '2min': {
+                    values: [5, 50, 45],
+                    description: '2分間の運動では、解糖系と有酸素系の貢献度がほぼ半々になります。'
+                },
+                '30min': {
+                    values: [1, 14, 85],
+                    description: '30分間のジョギングなどでは、有酸素系が支配的になり、糖質と脂肪を燃焼させます。'
+                },
+                '2hr': {
+                    values: [0, 5, 95],
+                    description: '2時間を超えるマラソンなどでは、有酸素系がほぼ100%のエネルギーを供給し、特に脂肪が重要な燃料となります。'
+                }
+            };
+
+            const ctx = document.getElementById('energySystemChart').getContext('2d');
+            const energyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['ATP-PCr系', '解糖系', '有酸素系'],
+                    datasets: [{
+                        label: 'エネルギー供給の割合 (%)',
+                        data: energyData['10s'].values,
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.7)', // emerald-500
+                            'rgba(249, 115, 22, 0.7)', // orange-500
+                            'rgba(14, 165, 233, 0.7)'  // sky-500
+                        ],
+                        borderColor: [
+                            'rgba(5, 150, 105, 1)',
+                            'rgba(234, 88, 12, 1)',
+                            'rgba(2, 132, 199, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'x',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                }
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            max: 100,
+                             ticks: {
+                                callback: function(value) {
+                                    return value + '%'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: '運動時間別 エネルギーシステム貢献度',
+                            font: {
+                                size: 18
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            }
+                        }
+                    }
+                }
+            });
+
+            const timeControls = document.getElementById('time-controls');
+            const chartDescription = document.getElementById('chart-description').querySelector('p');
+            const buttons = timeControls.querySelectorAll('.control-button');
+
+            function updateChart(time) {
+                const data = energyData[time];
+                energyChart.data.datasets[0].data = data.values;
+                energyChart.update();
+                chartDescription.textContent = data.description;
+
+                buttons.forEach(button => {
+                    if (button.dataset.time === time) {
+                        button.classList.add('active');
+                    } else {
+                        button.classList.remove('active');
+                    }
+                });
+            }
+
+            timeControls.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const time = e.target.dataset.time;
+                    updateChart(time);
+                }
+            });
+
+            updateChart('10s');
+
+            // Gemini API Integration for Exercise Plan Suggestion
+            const userGoalInput = document.getElementById('user-goal');
+            const generatePlanBtn = document.getElementById('generate-plan-btn');
+            const planOutputDiv = document.getElementById('plan-output');
+            const planContentP = document.getElementById('plan-content');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const buttonText = document.getElementById('button-text');
+            const errorMessageDiv = document.getElementById('error-message');
+
+            generatePlanBtn.addEventListener('click', async () => {
+                const userGoal = userGoalInput.value.trim();
+                if (!userGoal) {
+                    planOutputDiv.classList.add('hidden');
+                    errorMessageDiv.classList.remove('hidden');
+                    errorMessageDiv.querySelector('p').textContent = '目標を入力してください。';
+                    return;
+                }
+
+                planOutputDiv.classList.add('hidden');
+                errorMessageDiv.classList.add('hidden');
+                loadingSpinner.classList.remove('hidden');
+                buttonText.textContent = '生成中...';
+                generatePlanBtn.disabled = true;
+
+                try {
+                    let chatHistory = [];
+                    const prompt = `運動のエネルギーシステム（ATP-PCr系、解糖系、有酸素系）の知識に基づいて、ユーザーの目標「${userGoal}」に合わせた具体的な運動プランを提案してください。プランは短時間で実践可能なものとし、各運動がどのエネルギーシステムを主に利用するかを簡潔に含めてください。`;
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        planContentP.textContent = text;
+                        planOutputDiv.classList.remove('hidden');
+                    } else {
+                        throw new Error('APIからの応答が予期せぬ形式です。');
+                    }
+                } catch (error) {
+                    console.error('Error generating plan:', error);
+                    errorMessageDiv.classList.remove('hidden');
+                    errorMessageDiv.querySelector('p').textContent = `プランの生成中にエラーが発生しました: ${error.message}`;
+                } finally {
+                    loadingSpinner.classList.add('hidden');
+                    buttonText.textContent = '✨ プランを生成する ✨';
+                    generatePlanBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
